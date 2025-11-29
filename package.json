@@ -1,0 +1,12 @@
+{
+  "name": "math_game",
+  "version": "1.0.0",
+  "description": "Number Sense Sprint game",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}
