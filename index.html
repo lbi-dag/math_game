@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Number Sense Sprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #f5f5ff, #dde7ff);
+    }
+
+    .game-container {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 24px 28px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-label {
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+
+    .pill-value {
+      font-weight: 600;
+    }
+
+    .timer {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #dc2626;
+    }
+
+    .question-card {
+      margin-top: 8px;
+      margin-bottom: 16px;
+      padding: 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+      text-align: center;
+    }
+
+    .question-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    .question-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .answer-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .answer-input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      outline: none;
+      text-align: center;
+    }
+
+    .answer-input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.05s ease, box-shadow 0.1s ease, background 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .feedback {
+      min-height: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .feedback.correct {
+      color: #16a34a;
+    }
+
+    .feedback.wrong {
+      color: #dc2626;
+    }
+
+    .history {
+      font-size: 0.78rem;
+      color: #6b7280;
+      max-height: 56px;
+      overflow-y: auto;
+      margin-top: 4px;
+      border-top: 1px dashed #e5e7eb;
+      padding-top: 4px;
+    }
+
+    .history-entry {
+      margin-bottom: 2px;
+    }
+
+    .history-entry.correct {
+      color: #16a34a;
+    }
+
+    .history-entry.wrong {
+      color: #dc2626;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .game-container {
+        margin: 16px;
+        padding: 18px 16px 22px;
+      }
+
+      .question-text {
+        font-size: 1.6rem;
+      }
+
+      .title {
+        font-size: 1.05rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <div>
+        <div class="title">Number Sense Sprint</div>
+        <div class="subtitle">60 seconds • mental math warm-up</div>
+      </div>
+      <div class="tag">Sprint Mode</div>
+    </div>
+
+    <div class="info-row">
+      <div class="pill">
+        <span class="pill-label">Score</span>
+        <span class="pill-value" id="score">0</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Streak</span>
+        <span class="pill-value" id="streak">0</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Best</span>
+        <span class="pill-value" id="best-score">0</span>
+      </div>
+      <div class="timer" id="timer">60s</div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-label">Current Question</div>
+      <div class="question-text" id="question-text">Press Start</div>
+    </div>
+
+    <form class="answer-form" id="answer-form">
+      <input
+        type="number"
+        inputmode="numeric"
+        id="answer-input"
+        class="answer-input"
+        placeholder="Type answer & hit Enter"
+        autocomplete="off"
+      />
+      <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+    </form>
+
+    <div class="status-row">
+      <div id="accuracy-label">Accuracy: 0 / 0</div>
+      <button type="button" class="btn btn-secondary" id="reset-best-btn" title="Clear saved best score">
+        Reset Best
+      </button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="history" id="history-log"></div>
+
+    <div class="footer-note">
+      Pro tip: keep hands on the keyboard and tap Enter after each answer.
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const QUESTION_TYPES = ["add", "sub", "mul1", "mul2"];
+
+      const scoreEl = document.getElementById("score");
+      const streakEl = document.getElementById("streak");
+      const bestScoreEl = document.getElementById("best-score");
+      const timerEl = document.getElementById("timer");
+      const questionTextEl = document.getElementById("question-text");
+      const answerInputEl = document.getElementById("answer-input");
+      const answerForm = document.getElementById("answer-form");
+      const startBtn = document.getElementById("start-btn");
+      const resetBestBtn = document.getElementById("reset-best-btn");
+      const feedbackEl = document.getElementById("feedback");
+      const historyLogEl = document.getElementById("history-log");
+      const accuracyLabelEl = document.getElementById("accuracy-label");
+
+      let currentQuestion = null;
+      let timerId = null;
+      let timeLeft = 60;
+      let isRunning = false;
+      let score = 0;
+      let streak = 0;
+      let totalAnswered = 0;
+      let totalCorrect = 0;
+
+      const BEST_KEY = "numberSenseSprintBestScore";
+
+      function loadBestScore() {
+        const stored = localStorage.getItem(BEST_KEY);
+        const best = stored ? parseInt(stored, 10) || 0 : 0;
+        bestScoreEl.textContent = best;
+      }
+
+      function saveBestScore(newScore) {
+        const stored = localStorage.getItem(BEST_KEY);
+        const best = stored ? parseInt(stored, 10) || 0 : 0;
+        if (newScore > best) {
+          localStorage.setItem(BEST_KEY, String(newScore));
+          bestScoreEl.textContent = newScore;
+          showFeedback("🎉 New personal best!", "correct");
+        }
+      }
+
+      function randomInt(min, max) {
+        // inclusive
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function generateQuestion() {
+        const type = QUESTION_TYPES[randomInt(0, QUESTION_TYPES.length - 1)];
+        let a, b, text, answer;
+
+        switch (type) {
+          case "add":
+            a = randomInt(10, 99);
+            b = randomInt(10, 99);
+            text = a + " + " + b;
+            answer = a + b;
+            break;
+          case "sub":
+            a = randomInt(10, 99);
+            b = randomInt(10, 99);
+            if (b > a) {
+              const tmp = a;
+              a = b;
+              b = tmp;
+            }
+            text = a + " - " + b;
+            answer = a - b;
+            break;
+          case "mul1":
+            a = randomInt(2, 9);
+            b = randomInt(2, 9);
+            text = a + " × " + b;
+            answer = a * b;
+            break;
+          case "mul2":
+            a = randomInt(10, 99);
+            b = randomInt(2, 9);
+            text = a + " × " + b;
+            answer = a * b;
+            break;
+          default:
+            a = 1;
+            b = 1;
+            text = "1 + 1";
+            answer = 2;
+        }
+
+        currentQuestion = { text, answer };
+        questionTextEl.textContent = text;
+      }
+
+      function updateScoreboard() {
+        scoreEl.textContent = score;
+        streakEl.textContent = streak;
+        accuracyLabelEl.textContent =
+          "Accuracy: " + totalCorrect + " / " + totalAnswered;
+      }
+
+      function clearHistoryIfNeeded() {
+        const maxEntries = 25;
+        const children = historyLogEl.children;
+        while (children.length > maxEntries) {
+          historyLogEl.removeChild(children[children.length - 1]);
+        }
+      }
+
+      function addHistoryEntry(question, userAnswer, correctAnswer, isCorrect) {
+        const div = document.createElement("div");
+        div.className =
+          "history-entry " + (isCorrect ? "correct" : "wrong");
+        if (isCorrect) {
+          div.textContent = "✓ " + question + " = " + correctAnswer;
+        } else {
+          div.textContent =
+            "✗ " +
+            question +
+            " → you: " +
+            userAnswer +
+            " (correct: " +
+            correctAnswer +
+            ")";
+        }
+        historyLogEl.insertBefore(div, historyLogEl.firstChild);
+        clearHistoryIfNeeded();
+      }
+
+      function showFeedback(message, type) {
+        feedbackEl.textContent = message || "";
+        feedbackEl.classList.remove("correct", "wrong");
+        if (type) {
+          feedbackEl.classList.add(type);
+        }
+      }
+
+      function startGame() {
+        if (isRunning) return;
+        isRunning = true;
+        score = 0;
+        streak = 0;
+        totalAnswered = 0;
+        totalCorrect = 0;
+        timeLeft = 60;
+
+        updateScoreboard();
+        timerEl.textContent = timeLeft + "s";
+        historyLogEl.innerHTML = "";
+        showFeedback("Go! Type your answer and press Enter.", "correct");
+
+        startBtn.textContent = "Running...";
+        startBtn.disabled = true;
+        startBtn.classList.add("btn-secondary");
+        startBtn.classList.remove("btn-primary");
+
+        generateQuestion();
+        answerInputEl.disabled = false;
+        answerInputEl.value = "";
+        answerInputEl.focus();
+
+        if (timerId) {
+          clearInterval(timerId);
+        }
+        timerId = setInterval(() => {
+          timeLeft -= 1;
+          if (timeLeft <= 0) {
+            timerEl.textContent = "0s";
+            endGame();
+          } else {
+            timerEl.textContent = timeLeft + "s";
+          }
+        }, 1000);
+      }
+
+      function endGame() {
+        if (!isRunning) return;
+        isRunning = false;
+        clearInterval(timerId);
+        timerId = null;
+
+        startBtn.textContent = "Play Again";
+        startBtn.disabled = false;
+        startBtn.classList.add("btn-primary");
+        startBtn.classList.remove("btn-secondary");
+
+        answerInputEl.disabled = true;
+        showFeedback(
+          "Time! Final score: " +
+            score +
+            " | Accuracy: " +
+            totalCorrect +
+            "/" +
+            totalAnswered,
+          ""
+        );
+        saveBestScore(score);
+      }
+
+      function handleAnswerSubmit(event) {
+        event.preventDefault();
+        if (!isRunning || !currentQuestion) {
+          return;
+        }
+
+        const raw = answerInputEl.value.trim();
+        if (raw === "") {
+          return;
+        }
+
+        const userAnswer = parseInt(raw, 10);
+        const correctAnswer = currentQuestion.answer;
+
+        totalAnswered += 1;
+
+        if (userAnswer === correctAnswer) {
+          score += 1;
+          streak += 1;
+          totalCorrect += 1;
+          showFeedback("✓ Correct!", "correct");
+          addHistoryEntry(currentQuestion.text, userAnswer, correctAnswer, true);
+        } else {
+          streak = 0;
+          showFeedback(
+            "✗ " + currentQuestion.text + " = " + correctAnswer,
+            "wrong"
+          );
+          addHistoryEntry(currentQuestion.text, userAnswer, correctAnswer, false);
+        }
+
+        updateScoreboard();
+        answerInputEl.value = "";
+        answerInputEl.focus();
+
+        if (timeLeft > 0) {
+          generateQuestion();
+        } else {
+          endGame();
+        }
+      }
+
+      function resetBestScore() {
+        localStorage.removeItem(BEST_KEY);
+        bestScoreEl.textContent = "0";
+        showFeedback("Best score reset.", "");
+      }
+
+      // Wire up events
+      startBtn.addEventListener("click", startGame);
+      answerForm.addEventListener("submit", handleAnswerSubmit);
+      resetBestBtn.addEventListener("click", resetBestScore);
+
+      // Init
+      loadBestScore();
+      answerInputEl.disabled = true;
+    })();
+  </script>
+</body>
+</html>
