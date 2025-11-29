@@ -117,16 +117,19 @@
       display: flex;
       gap: 8px;
       margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .answer-input {
-      flex: 1;
+      flex: 1 1 180px;
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid #d1d5db;
       font-size: 1rem;
       outline: none;
       text-align: center;
+      min-width: 0;
     }
 
     .answer-input:focus {
@@ -163,6 +166,12 @@
     .btn-secondary {
       background: #e5e7eb;
       color: #111827;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .status-row {
@@ -230,6 +239,11 @@
       .title {
         font-size: 1.05rem;
       }
+
+      .button-row {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -270,10 +284,14 @@
         inputmode="numeric"
         id="answer-input"
         class="answer-input"
-        placeholder="Type your answer and press Enter"
+        placeholder="Type your answer, then tap Submit or press Enter"
+
         autocomplete="off"
       />
-      <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+      <div class="button-row">
+        <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+        <button type="submit" class="btn btn-secondary" id="submit-btn">Submit</button>
+      </div>
     </form>
 
     <div class="status-row">
@@ -288,7 +306,7 @@
     <div class="history" id="history-log"></div>
 
     <div class="footer-note">
-      Pro tip: keep hands on the keyboard and tap Enter after each answer.
+      Pro tip: tap Submit or press Enter after each answer.
     </div>
   </div>
 

@@ -93,6 +93,7 @@ function initializeGame() {
   const answerInputEl = document.getElementById("answer-input");
   const answerForm = document.getElementById("answer-form");
   const startBtn = document.getElementById("start-btn");
+  const submitBtn = document.getElementById("submit-btn");
   const resetBestBtn = document.getElementById("reset-best-btn");
   const feedbackEl = document.getElementById("feedback");
   const historyLogEl = document.getElementById("history-log");
@@ -174,12 +175,16 @@ function initializeGame() {
     updateScoreboard();
     timerEl.textContent = `${timeLeft}s`;
     historyLogEl.innerHTML = "";
-    showFeedback("Go! Type your answer and press Enter.", "correct");
+    showFeedback("Go! Type your answer and tap Submit or press Enter.", "correct");
+
 
     startBtn.textContent = "Running...";
     startBtn.disabled = true;
     startBtn.classList.add("btn-secondary");
     startBtn.classList.remove("btn-primary");
+    submitBtn.disabled = false;
+    submitBtn.classList.add("btn-primary");
+    submitBtn.classList.remove("btn-secondary");
 
     currentQuestion = generateQuestion();
     questionTextEl.textContent = currentQuestion.text;
@@ -211,6 +216,10 @@ function initializeGame() {
     startBtn.disabled = false;
     startBtn.classList.add("btn-primary");
     startBtn.classList.remove("btn-secondary");
+    submitBtn.disabled = true;
+    submitBtn.classList.add("btn-secondary");
+    submitBtn.classList.remove("btn-primary");
+
 
     answerInputEl.disabled = true;
     showFeedback(
@@ -268,6 +277,8 @@ function initializeGame() {
 
   loadBestScore();
   answerInputEl.disabled = true;
+  submitBtn.disabled = true;
+
   updateScoreboard();
 }
 
