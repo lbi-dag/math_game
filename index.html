@@ -117,16 +117,19 @@
       display: flex;
       gap: 8px;
       margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .answer-input {
-      flex: 1;
+      flex: 1 1 180px;
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid #d1d5db;
       font-size: 1rem;
       outline: none;
       text-align: center;
+      min-width: 0;
     }
 
     .answer-input:focus {
@@ -163,6 +166,12 @@
     .btn-secondary {
       background: #e5e7eb;
       color: #111827;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .status-row {
@@ -230,6 +239,11 @@
       .title {
         font-size: 1.05rem;
       }
+
+      .button-row {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -270,14 +284,18 @@
         inputmode="numeric"
         id="answer-input"
         class="answer-input"
-        placeholder="Type answer & hit Enter"
+        placeholder="Type your answer, then tap Submit or press Enter"
+
         autocomplete="off"
       />
-      <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+      <div class="button-row">
+        <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+        <button type="submit" class="btn btn-secondary" id="submit-btn">Submit</button>
+      </div>
     </form>
 
     <div class="status-row">
-      <div id="accuracy-label">Accuracy: 0 / 0</div>
+      <div id="accuracy-label">Score: 0 / 0</div>
       <button type="button" class="btn btn-secondary" id="reset-best-btn" title="Clear saved best score">
         Reset Best
       </button>
@@ -288,266 +306,10 @@
     <div class="history" id="history-log"></div>
 
     <div class="footer-note">
-      Pro tip: keep hands on the keyboard and tap Enter after each answer.
+      Pro tip: tap Submit or press Enter after each answer.
     </div>
   </div>
 
-  <script>
-    (function () {
-      const QUESTION_TYPES = ["add", "sub", "mul1", "mul2"];
-
-      const scoreEl = document.getElementById("score");
-      const streakEl = document.getElementById("streak");
-      const bestScoreEl = document.getElementById("best-score");
-      const timerEl = document.getElementById("timer");
-      const questionTextEl = document.getElementById("question-text");
-      const answerInputEl = document.getElementById("answer-input");
-      const answerForm = document.getElementById("answer-form");
-      const startBtn = document.getElementById("start-btn");
-      const resetBestBtn = document.getElementById("reset-best-btn");
-      const feedbackEl = document.getElementById("feedback");
-      const historyLogEl = document.getElementById("history-log");
-      const accuracyLabelEl = document.getElementById("accuracy-label");
-
-      let currentQuestion = null;
-      let timerId = null;
-      let timeLeft = 60;
-      let isRunning = false;
-      let score = 0;
-      let streak = 0;
-      let totalAnswered = 0;
-      let totalCorrect = 0;
-
-      const BEST_KEY = "numberSenseSprintBestScore";
-
-      function loadBestScore() {
-        const stored = localStorage.getItem(BEST_KEY);
-        const best = stored ? parseInt(stored, 10) || 0 : 0;
-        bestScoreEl.textContent = best;
-      }
-
-      function saveBestScore(newScore) {
-        const stored = localStorage.getItem(BEST_KEY);
-        const best = stored ? parseInt(stored, 10) || 0 : 0;
-        if (newScore > best) {
-          localStorage.setItem(BEST_KEY, String(newScore));
-          bestScoreEl.textContent = newScore;
-          showFeedback("🎉 New personal best!", "correct");
-        }
-      }
-
-      function randomInt(min, max) {
-        // inclusive
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
-
-      function generateQuestion() {
-        const type = QUESTION_TYPES[randomInt(0, QUESTION_TYPES.length - 1)];
-        let a, b, text, answer;
-
-        switch (type) {
-          case "add":
-            a = randomInt(10, 99);
-            b = randomInt(10, 99);
-            text = a + " + " + b;
-            answer = a + b;
-            break;
-          case "sub":
-            a = randomInt(10, 99);
-            b = randomInt(10, 99);
-            if (b > a) {
-              const tmp = a;
-              a = b;
-              b = tmp;
-            }
-            text = a + " - " + b;
-            answer = a - b;
-            break;
-          case "mul1":
-            a = randomInt(2, 9);
-            b = randomInt(2, 9);
-            text = a + " × " + b;
-            answer = a * b;
-            break;
-          case "mul2":
-            a = randomInt(10, 99);
-            b = randomInt(2, 9);
-            text = a + " × " + b;
-            answer = a * b;
-            break;
-          default:
-            a = 1;
-            b = 1;
-            text = "1 + 1";
-            answer = 2;
-        }
-
-        currentQuestion = { text, answer };
-        questionTextEl.textContent = text;
-      }
-
-      function updateScoreboard() {
-        scoreEl.textContent = score;
-        streakEl.textContent = streak;
-        accuracyLabelEl.textContent =
-          "Accuracy: " + totalCorrect + " / " + totalAnswered;
-      }
-
-      function clearHistoryIfNeeded() {
-        const maxEntries = 25;
-        const children = historyLogEl.children;
-        while (children.length > maxEntries) {
-          historyLogEl.removeChild(children[children.length - 1]);
-        }
-      }
-
-      function addHistoryEntry(question, userAnswer, correctAnswer, isCorrect) {
-        const div = document.createElement("div");
-        div.className =
-          "history-entry " + (isCorrect ? "correct" : "wrong");
-        if (isCorrect) {
-          div.textContent = "✓ " + question + " = " + correctAnswer;
-        } else {
-          div.textContent =
-            "✗ " +
-            question +
-            " → you: " +
-            userAnswer +
-            " (correct: " +
-            correctAnswer +
-            ")";
-        }
-        historyLogEl.insertBefore(div, historyLogEl.firstChild);
-        clearHistoryIfNeeded();
-      }
-
-      function showFeedback(message, type) {
-        feedbackEl.textContent = message || "";
-        feedbackEl.classList.remove("correct", "wrong");
-        if (type) {
-          feedbackEl.classList.add(type);
-        }
-      }
-
-      function startGame() {
-        if (isRunning) return;
-        isRunning = true;
-        score = 0;
-        streak = 0;
-        totalAnswered = 0;
-        totalCorrect = 0;
-        timeLeft = 60;
-
-        updateScoreboard();
-        timerEl.textContent = timeLeft + "s";
-        historyLogEl.innerHTML = "";
-        showFeedback("Go! Type your answer and press Enter.", "correct");
-
-        startBtn.textContent = "Running...";
-        startBtn.disabled = true;
-        startBtn.classList.add("btn-secondary");
-        startBtn.classList.remove("btn-primary");
-
-        generateQuestion();
-        answerInputEl.disabled = false;
-        answerInputEl.value = "";
-        answerInputEl.focus();
-
-        if (timerId) {
-          clearInterval(timerId);
-        }
-        timerId = setInterval(() => {
-          timeLeft -= 1;
-          if (timeLeft <= 0) {
-            timerEl.textContent = "0s";
-            endGame();
-          } else {
-            timerEl.textContent = timeLeft + "s";
-          }
-        }, 1000);
-      }
-
-      function endGame() {
-        if (!isRunning) return;
-        isRunning = false;
-        clearInterval(timerId);
-        timerId = null;
-
-        startBtn.textContent = "Play Again";
-        startBtn.disabled = false;
-        startBtn.classList.add("btn-primary");
-        startBtn.classList.remove("btn-secondary");
-
-        answerInputEl.disabled = true;
-        showFeedback(
-          "Time! Final score: " +
-            score +
-            " | Accuracy: " +
-            totalCorrect +
-            "/" +
-            totalAnswered,
-          ""
-        );
-        saveBestScore(score);
-      }
-
-      function handleAnswerSubmit(event) {
-        event.preventDefault();
-        if (!isRunning || !currentQuestion) {
-          return;
-        }
-
-        const raw = answerInputEl.value.trim();
-        if (raw === "") {
-          return;
-        }
-
-        const userAnswer = parseInt(raw, 10);
-        const correctAnswer = currentQuestion.answer;
-
-        totalAnswered += 1;
-
-        if (userAnswer === correctAnswer) {
-          score += 1;
-          streak += 1;
-          totalCorrect += 1;
-          showFeedback("✓ Correct!", "correct");
-          addHistoryEntry(currentQuestion.text, userAnswer, correctAnswer, true);
-        } else {
-          streak = 0;
-          showFeedback(
-            "✗ " + currentQuestion.text + " = " + correctAnswer,
-            "wrong"
-          );
-          addHistoryEntry(currentQuestion.text, userAnswer, correctAnswer, false);
-        }
-
-        updateScoreboard();
-        answerInputEl.value = "";
-        answerInputEl.focus();
-
-        if (timeLeft > 0) {
-          generateQuestion();
-        } else {
-          endGame();
-        }
-      }
-
-      function resetBestScore() {
-        localStorage.removeItem(BEST_KEY);
-        bestScoreEl.textContent = "0";
-        showFeedback("Best score reset.", "");
-      }
-
-      // Wire up events
-      startBtn.addEventListener("click", startGame);
-      answerForm.addEventListener("submit", handleAnswerSubmit);
-      resetBestBtn.addEventListener("click", resetBestScore);
-
-      // Init
-      loadBestScore();
-      answerInputEl.disabled = true;
-    })();
-  </script>
+  <script type="module" src="./game.js"></script>
 </body>
 </html>
