@@ -177,6 +177,7 @@ function initializeGame() {
     historyLogEl.innerHTML = "";
     showFeedback("Go! Type your answer and tap Submit or press Enter.", "correct");
 
+
     startBtn.textContent = "Running...";
     startBtn.disabled = true;
     startBtn.classList.add("btn-secondary");
@@ -218,6 +219,7 @@ function initializeGame() {
     submitBtn.disabled = true;
     submitBtn.classList.add("btn-secondary");
     submitBtn.classList.remove("btn-primary");
+
 
     answerInputEl.disabled = true;
     showFeedback(
@@ -276,6 +278,7 @@ function initializeGame() {
   loadBestScore();
   answerInputEl.disabled = true;
   submitBtn.disabled = true;
+
   updateScoreboard();
 }
 
