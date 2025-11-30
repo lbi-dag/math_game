@@ -88,7 +88,7 @@ export function generateQuestion(rng = Math.random, forcedType = null, difficult
       const [min, max] = singleDigitRange(level);
       a = randomInt(min, max, rng);
       b = randomInt(min, max, rng);
-      text = `${a} A- ${b}`;
+      text = `${a} × ${b}`;
       answer = a * b;
       break;
     }
@@ -96,7 +96,7 @@ export function generateQuestion(rng = Math.random, forcedType = null, difficult
       const ranges = multiDigitTimesSingleRange(level);
       a = randomInt(ranges.firstMin, ranges.firstMax, rng);
       b = randomInt(ranges.secondMin, ranges.secondMax, rng);
-      text = `${a} A- ${b}`;
+      text = `${a} × ${b}`;
       answer = a * b;
       break;
     }
