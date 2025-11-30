@@ -23,7 +23,7 @@
       background: #ffffff;
       border-radius: 16px;
       padding: 24px 24px 28px;
-      max-width: 480px;
+      max-width: 520px;
       width: 100%;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
@@ -34,6 +34,44 @@
       align-items: center;
       margin-bottom: 12px;
       gap: 12px;
+    }
+
+    .mode-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .mode-toggle {
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px;
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #4b5563;
+      transition: background 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .mode-btn.active {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
+    }
+
+    .mode-btn:not(.active):hover {
+      color: #111827;
+      background: #e5e7eb;
     }
 
     .title {
@@ -64,6 +102,7 @@
       margin-bottom: 12px;
       gap: 10px;
       font-size: 0.9rem;
+      flex-wrap: wrap;
     }
 
     .pill {
@@ -73,6 +112,16 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .pill.highlight {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .pill.muted {
+      background: #eef2ff;
+      color: #3730a3;
     }
 
     .pill-label {
@@ -226,6 +275,10 @@
       text-align: center;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     @media (max-width: 520px) {
       .game-container {
         margin: 16px;
@@ -252,9 +305,15 @@
     <div class="game-header">
       <div>
         <div class="title">Number Sense Sprint</div>
-        <div class="subtitle">60 seconds • mental math warm-up</div>
+        <div class="subtitle" id="mode-subtitle">60-second mental math warm-up</div>
       </div>
-      <div class="tag">Sprint Mode</div>
+      <div class="mode-area">
+        <div class="mode-toggle" id="mode-toggle">
+          <button type="button" class="mode-btn active" data-mode-btn="sprint">Sprint</button>
+          <button type="button" class="mode-btn" data-mode-btn="survival">Survival</button>
+        </div>
+        <div class="tag" id="mode-tag">Sprint Mode</div>
+      </div>
     </div>
 
     <div class="info-row">
@@ -270,7 +329,14 @@
         <span class="pill-label">Best</span>
         <span class="pill-value" id="best-score">0</span>
       </div>
-      <div class="timer" id="timer">60s</div>
+      <div class="pill highlight hidden" id="lives-pill">
+        <span class="pill-label">Lives</span>
+        <span class="pill-value" id="lives-count">3</span>
+      </div>
+      <div class="pill muted" id="timer-pill">
+        <span class="pill-label">Time</span>
+        <span class="pill-value timer" id="timer">60s</span>
+      </div>
     </div>
 
     <div class="question-card">
@@ -285,7 +351,6 @@
         id="answer-input"
         class="answer-input"
         placeholder="Type your answer, then tap Submit or press Enter"
-
         autocomplete="off"
       />
       <div class="button-row">
