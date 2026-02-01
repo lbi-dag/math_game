@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Number Sense Sprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #f5f5ff, #dde7ff);
+    }
+
+    .game-container {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 24px 28px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .mode-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .mode-toggle {
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px;
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #4b5563;
+      transition: background 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .mode-btn.active {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
+    }
+
+    .mode-btn:not(.active):hover {
+      color: #111827;
+      background: #e5e7eb;
+    }
+
+    .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill.highlight {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .pill.muted {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .pill-label {
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+
+    .pill-value {
+      font-weight: 600;
+    }
+
+    .timer {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #dc2626;
+    }
+
+    .question-card {
+      margin-top: 8px;
+      margin-bottom: 16px;
+      padding: 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+      text-align: center;
+    }
+
+    .question-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    .question-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .answer-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      flex: 1 1 180px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      outline: none;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .answer-input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.05s ease, box-shadow 0.1s ease, background 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .feedback {
+      min-height: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .feedback.correct {
+      color: #16a34a;
+    }
+
+    .feedback.wrong {
+      color: #dc2626;
+    }
+
+    .history {
+      font-size: 0.78rem;
+      color: #6b7280;
+      max-height: 56px;
+      overflow-y: auto;
+      margin-top: 4px;
+      border-top: 1px dashed #e5e7eb;
+      padding-top: 4px;
+    }
+
+    .history-entry {
+      margin-bottom: 2px;
+    }
+
+    .history-entry.correct {
+      color: #16a34a;
+    }
+
+    .history-entry.wrong {
+      color: #dc2626;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 520px) {
+      .game-container {
+        margin: 16px;
+        padding: 18px 16px 22px;
+      }
+
+      .question-text {
+        font-size: 1.6rem;
+      }
+
+      .title {
+        font-size: 1.05rem;
+      }
+
+      .button-row {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <div>
+        <div class="title">Number Sense Sprint</div>
+        <div class="subtitle" id="mode-subtitle">60-second mental math warm-up</div>
+      </div>
+      <div class="mode-area">
+        <div class="mode-toggle" id="mode-toggle">
+          <button type="button" class="mode-btn active" data-mode-btn="sprint">Sprint</button>
+          <button type="button" class="mode-btn" data-mode-btn="survival">Survival</button>
+        </div>
+        <div class="tag" id="mode-tag">Sprint Mode</div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="pill">
+        <span class="pill-label">Score</span>
+        <span class="pill-value" id="score">0</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Streak</span>
+        <span class="pill-value" id="streak">0</span>
+      </div>
+      <div class="pill">
+        <span class="pill-label">Best</span>
+        <span class="pill-value" id="best-score">0</span>
+      </div>
+      <div class="pill highlight hidden" id="lives-pill">
+        <span class="pill-label">Lives</span>
+        <span class="pill-value" id="lives-count">3</span>
+      </div>
+      <div class="pill muted" id="timer-pill">
+        <span class="pill-label">Time</span>
+        <span class="pill-value timer" id="timer">60s</span>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-label">Current Question</div>
+      <div class="question-text" id="question-text">Press Start</div>
+    </div>
+
+    <form class="answer-form" id="answer-form">
+      <input
+        type="number"
+        inputmode="numeric"
+        id="answer-input"
+        class="answer-input"
+        placeholder="Type your answer, then tap Submit or press Enter"
+        autocomplete="off"
+      />
+      <div class="button-row">
+        <button type="button" class="btn btn-primary" id="start-btn">Start</button>
+        <button type="submit" class="btn btn-secondary" id="submit-btn">Submit</button>
+      </div>
+    </form>
+
+    <div class="status-row">
+      <div id="accuracy-label">Score: 0 / 0</div>
+      <button type="button" class="btn btn-secondary" id="reset-best-btn" title="Clear saved best score">
+        Reset Best
+      </button>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="history" id="history-log"></div>
+
+    <div class="footer-note">
+      Pro tip: tap Submit or press Enter after each answer.
+    </div>
+  </div>
+
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
