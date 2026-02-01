@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About Math Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+    :root {
+      --paper: #f6efe3;
+      --ink: #0e1111;
+      --accent: #ff7b3e;
+      --accent-deep: #ff4d2a;
+      --accent-soft: #ffd6c2;
+      --mint: #c7f4d9;
+      --violet: #2b2f8f;
+      --side: #11141a;
+      --side-ink: #f4efe6;
+      --card: #fffdf9;
+      --shadow: 0 18px 40px rgba(15, 12, 6, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255, 203, 130, 0.6), transparent 55%),
+        radial-gradient(circle at 80% 10%, rgba(145, 215, 255, 0.5), transparent 45%),
+        radial-gradient(circle at 40% 85%, rgba(255, 156, 186, 0.45), transparent 55%),
+        var(--paper);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .sidebar {
+      background: linear-gradient(160deg, #0b0c12 0%, #171a27 55%, #1d2236 100%);
+      color: var(--side-ink);
+      padding: 42px 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: -120px auto auto -80px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 123, 62, 0.45), transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo {
+      font-family: "Fraunces", "Times New Roman", serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    .manifesto {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 220px;
+    }
+
+    .manifesto strong {
+      color: #ffd6c2;
+    }
+
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      color: #ffd6c2;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .about-link span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .content {
+      padding: 48px 7vw 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-family: "Fraunces", "Times New Roman", serif;
+      font-size: clamp(2.2rem, 3vw, 3.1rem);
+      margin: 0 0 12px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #3c3a34;
+      line-height: 1.7;
+    }
+
+    .hero-card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: #4c4a43;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 18px;
+    }
+
+    .timeline h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-family: "Fraunces", "Times New Roman", serif;
+    }
+
+    .entry {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 6px;
+    }
+
+    .entry span {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6f6a5e;
+    }
+
+    .entry h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .entry p {
+      margin: 0;
+      color: #4c4a43;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .value-card {
+      background: #fff9f1;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255, 123, 62, 0.2);
+    }
+
+    .value-card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .value-card p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: #4c4a43;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      font-size: 0.92rem;
+      color: #4c4a43;
+      line-height: 1.6;
+      max-width: 620px;
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        padding: 32px 28px;
+      }
+
+      .manifesto {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .content {
+        padding: 34px 7vw 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="logo">Math Games</div>
+      <div class="manifesto">
+        Math Games is a free (really), curious, no-ads playground for number lovers and classroom rebels.
+        Build number sense, chase streaks, and learn by doing. <strong>About Math Games…</strong>
+      </div>
+      <a class="about-link" href="./index.html">
+        <span>←</span>
+        Back to Games
+      </a>
+    </aside>
+
+    <main class="content">
+      <section class="hero">
+        <div>
+          <h1>About Math Games</h1>
+          <p>
+            Math Games started as a tiny challenge: make practice feel as satisfying as play. What began as a
+            weekend experiment in small classrooms has grown into a growing collection of micro-games that
+            reward curiosity, speed, and grit.
+          </p>
+        </div>
+        <div class="hero-card">
+          <h2>Our north star</h2>
+          <p>
+            Build a space where anyone can warm up, reset, and rediscover the joy of mental math without
+            distractions. If it does not feel playful, it does not ship.
+          </p>
+        </div>
+      </section>
+
+      <section class="timeline">
+        <h2>A brief history</h2>
+        <div class="entry">
+          <span>2025</span>
+          <h3>First game online</h3>
+          <p>
+            The first Number Sense Sprint game, with a humble design, went online.
+          </p>
+        </div>
+        
+        <div class="entry">
+          <span>Now</span>
+          <h3>Growing the arcade</h3>
+          <p>
+            New games are in the pipeline, each built to spotlight a single math habit so players can feel
+            mastery in minutes.
+          </p>
+        </div>
+      </section>
+
+      <section class="values">
+        <div class="value-card">
+          <h3>Free & open</h3>
+          <p>Everything here is free to play and easy to share in class.</p>
+        </div>
+        <div class="value-card">
+          <h3>Short sessions</h3>
+          <p>Each game is built for 2-5 minute bursts that fit into busy days.</p>
+        </div>
+        <div class="value-card">
+          <h3>Built for flow</h3>
+          <p>Minimal friction, immediate feedback, and delightful pacing.</p>
+        </div>
+      </section>
+
+      <p class="footer-note">
+        If you have ideas for new modes or want to collaborate, drop a note any time. Math Games is built in
+        the open, and it grows with the community.
+      </p>
+    </main>
+  </div>
+</body>
+</html>
