@@ -79,6 +79,26 @@
       font-weight: 700;
     }
 
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link span {
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      background: #eef2ff;
+    }
+
     .tag {
       font-size: 0.75rem;
       padding: 4px 8px;
@@ -304,6 +324,10 @@
   <div class="game-container">
     <div class="game-header">
       <div>
+        <a class="back-link" href="./index.html">
+          <span>←</span>
+          Back to games
+        </a>
         <div class="title">Number Sense Sprint</div>
         <div class="subtitle" id="mode-subtitle">60-second mental math warm-up</div>
       </div>
