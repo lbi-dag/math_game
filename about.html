@@ -47,9 +47,11 @@
     .sidebar {
       background: linear-gradient(160deg, #0b0c12 0%, #171a27 55%, #1d2236 100%);
       color: var(--side-ink);
-      padding: 42px 32px 36px;
+      padding: 28px 28px 24px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: flex-start;
     }
 
     .sidebar::before {
@@ -63,28 +65,11 @@
       pointer-events: none;
     }
 
-    .logo {
-      font-family: "Fraunces", "Times New Roman", serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 28px;
-    }
-
-    .manifesto {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      max-width: 220px;
-    }
-
-    .manifesto strong {
-      color: #ffd6c2;
-    }
-
     .about-link {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 22px;
+      margin-top: 0;
       color: #ffd6c2;
       text-decoration: none;
       font-weight: 600;
@@ -232,11 +217,7 @@
       }
 
       .sidebar {
-        padding: 32px 28px;
-      }
-
-      .manifesto {
-        max-width: none;
+        padding: 24px 24px 22px;
       }
     }
 
@@ -250,11 +231,6 @@
 <body>
   <div class="page">
     <aside class="sidebar">
-      <div class="logo">Math Games</div>
-      <div class="manifesto">
-        Math Games is a free (really), curious, no-ads playground for number lovers and classroom rebels.
-        Build number sense, chase streaks, and learn by doing. <strong>About Math Games…</strong>
-      </div>
       <a class="about-link" href="./index.html">
         <span>←</span>
         Back to Games
@@ -323,3 +299,4 @@
   </div>
 </body>
 </html>
+
