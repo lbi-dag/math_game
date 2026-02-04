@@ -13,6 +13,7 @@
       --accent: #ff7b3e;
       --accent-deep: #ff4d2a;
       --accent-soft: #ffd6c2;
+      --logo-ring: rgba(255, 123, 62, 0.18);
       --mint: #c7f4d9;
       --violet: #2b2f8f;
       --side: #11141a;
@@ -47,9 +48,13 @@
     .sidebar {
       background: linear-gradient(160deg, #0b0c12 0%, #171a27 55%, #1d2236 100%);
       color: var(--side-ink);
-      padding: 42px 32px 36px;
+      padding: 28px 28px 24px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .sidebar::before {
@@ -63,28 +68,56 @@
       pointer-events: none;
     }
 
-    .logo {
+    .site-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--side-ink);
+      position: relative;
+      z-index: 1;
+    }
+
+    .site-logo:focus-visible {
+      outline: 2px solid var(--accent-soft);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+    }
+
+    .logo-ring {
+      fill: var(--logo-ring);
+      stroke: var(--accent);
+      stroke-width: 2.6;
+    }
+
+    .logo-plus {
+      stroke: var(--accent-soft);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .logo-dot {
+      fill: var(--accent-soft);
+    }
+
+    .logo-text {
       font-family: "Fraunces", "Times New Roman", serif;
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      margin-bottom: 28px;
-    }
-
-    .manifesto {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      max-width: 220px;
-    }
-
-    .manifesto strong {
-      color: #ffd6c2;
+      letter-spacing: 0.02em;
     }
 
     .about-link {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 22px;
+      margin-top: 0;
       color: #ffd6c2;
       text-decoration: none;
       font-weight: 600;
@@ -232,11 +265,7 @@
       }
 
       .sidebar {
-        padding: 32px 28px;
-      }
-
-      .manifesto {
-        max-width: none;
+        padding: 24px 24px 22px;
       }
     }
 
@@ -250,11 +279,14 @@
 <body>
   <div class="page">
     <aside class="sidebar">
-      <div class="logo">Math Games</div>
-      <div class="manifesto">
-        Math Games is a free (really), curious, no-ads playground for number lovers and classroom rebels.
-        Build number sense, chase streaks, and learn by doing. <strong>About Math Games…</strong>
-      </div>
+      <a class="site-logo" href="./index.html" aria-label="Math Games home">
+        <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <circle class="logo-ring" cx="24" cy="24" r="18" />
+          <path class="logo-plus" d="M24 16v16M16 24h16" />
+          <circle class="logo-dot" cx="34" cy="14" r="4" />
+        </svg>
+        <span class="logo-text">Math Games</span>
+      </a>
       <a class="about-link" href="./index.html">
         <span>←</span>
         Back to Games
@@ -323,3 +355,4 @@
   </div>
 </body>
 </html>
+
