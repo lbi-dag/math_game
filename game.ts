@@ -1,11 +1,41 @@
-export const QUESTION_TYPES = ["add", "sub", "mul1", "mul2"];
+export type QuestionType = "add" | "sub" | "mul1" | "mul2";
+export type ModeKey = "sprint" | "survival";
+
+export interface Question {
+  text: string;
+  answer: number;
+  type: QuestionType;
+}
+
+export interface StatsSnapshot {
+  score: number;
+  streak: number;
+  totalAnswered: number;
+  totalCorrect: number;
+}
+
+interface GameState extends StatsSnapshot {
+  lives: number | null;
+  difficulty: number;
+}
+
+interface ModeConfig {
+  label: string;
+  tag: string;
+  subtitle: string;
+  hasTimer: boolean;
+  startingLives: number | null;
+  bestKey: string;
+}
+
+export const QUESTION_TYPES: QuestionType[] = ["add", "sub", "mul1", "mul2"];
 
 const MAX_DIFFICULTY = 6;
 const SPRINT_TIME_SECONDS = 60;
 const BEST_KEY_PREFIX = "numberSenseBest:";
 const LEGACY_SPRINT_KEY = "numberSenseSprintBestScore";
 
-const MODES = {
+const MODES: Record<ModeKey, ModeConfig> = {
   sprint: {
     label: "Sprint",
     tag: "Sprint Mode",
@@ -24,26 +54,26 @@ const MODES = {
   },
 };
 
-function clampDifficulty(value) {
+function clampDifficulty(value: number): number {
   if (!Number.isFinite(value)) return 1;
   return Math.min(MAX_DIFFICULTY, Math.max(1, Math.floor(value)));
 }
 
-function additionRange(difficulty) {
+function additionRange(difficulty: number): [number, number] {
   const boost = Math.max(0, difficulty - 1);
   const min = 10 + boost * 8;
   const max = 99 + boost * 25;
   return [min, max];
 }
 
-function singleDigitRange(difficulty) {
+function singleDigitRange(difficulty: number): [number, number] {
   const boost = Math.max(0, difficulty - 1);
   const min = 2 + Math.min(boost, 4);
   const max = 9 + Math.min(boost * 2, 8);
   return [min, max];
 }
 
-function multiDigitTimesSingleRange(difficulty) {
+function multiDigitTimesSingleRange(difficulty: number) {
   const boost = Math.max(0, difficulty - 1);
   const firstMin = 10 + boost * 12;
   const firstMax = 99 + boost * 22;
@@ -52,17 +82,21 @@ function multiDigitTimesSingleRange(difficulty) {
   return { firstMin, firstMax, secondMin, secondMax };
 }
 
-export function randomInt(min, max, rng = Math.random) {
+export function randomInt(min: number, max: number, rng: () => number = Math.random): number {
   return Math.floor(rng() * (max - min + 1)) + min;
 }
 
-export function generateQuestion(rng = Math.random, forcedType = null, difficulty = 1) {
+export function generateQuestion(
+  rng: () => number = Math.random,
+  forcedType: QuestionType | null = null,
+  difficulty: number = 1
+): Question {
   const type = forcedType ?? QUESTION_TYPES[randomInt(0, QUESTION_TYPES.length - 1, rng)];
   const level = clampDifficulty(difficulty ?? 1);
-  let a;
-  let b;
-  let text;
-  let answer;
+  let a: number;
+  let b: number;
+  let text: string;
+  let answer: number;
 
   switch (type) {
     case "add": {
@@ -110,7 +144,7 @@ export function generateQuestion(rng = Math.random, forcedType = null, difficult
   return { text, answer, type };
 }
 
-export function parseIntegerAnswer(rawInput) {
+export function parseIntegerAnswer(rawInput: unknown): number | null {
   const normalized = rawInput?.toString().trim();
   if (!normalized) return null;
   const value = Number(normalized);
@@ -118,13 +152,17 @@ export function parseIntegerAnswer(rawInput) {
   return value;
 }
 
-export function evaluateAnswer(rawInput, currentQuestion, stats) {
+export function evaluateAnswer(
+  rawInput: unknown,
+  currentQuestion: Question | null,
+  stats: Partial<StatsSnapshot>
+): { status: "invalid" | "correct" | "wrong"; parsedAnswer: number | null; stats: StatsSnapshot } {
   const parsedAnswer = parseIntegerAnswer(rawInput);
-  const baseStats = {
-    score: stats.score || 0,
-    streak: stats.streak || 0,
-    totalAnswered: stats.totalAnswered || 0,
-    totalCorrect: stats.totalCorrect || 0,
+  const baseStats: StatsSnapshot = {
+    score: stats.score ?? 0,
+    streak: stats.streak ?? 0,
+    totalAnswered: stats.totalAnswered ?? 0,
+    totalCorrect: stats.totalCorrect ?? 0,
   };
 
   if (parsedAnswer === null || !currentQuestion) {
@@ -132,7 +170,7 @@ export function evaluateAnswer(rawInput, currentQuestion, stats) {
   }
 
   const isCorrect = parsedAnswer === currentQuestion.answer;
-  const updatedStats = { ...baseStats, totalAnswered: baseStats.totalAnswered + 1 };
+  const updatedStats: StatsSnapshot = { ...baseStats, totalAnswered: baseStats.totalAnswered + 1 };
 
   if (isCorrect) {
     updatedStats.score += 1;
@@ -145,34 +183,42 @@ export function evaluateAnswer(rawInput, currentQuestion, stats) {
   return { status: "wrong", parsedAnswer, stats: updatedStats };
 }
 
-function initializeGame() {
-  const scoreEl = document.getElementById("score");
-  const streakEl = document.getElementById("streak");
-  const bestScoreEl = document.getElementById("best-score");
-  const timerEl = document.getElementById("timer");
-  const timerPillEl = document.getElementById("timer-pill");
-  const livesPillEl = document.getElementById("lives-pill");
-  const livesCountEl = document.getElementById("lives-count");
-  const modeTagEl = document.getElementById("mode-tag");
-  const modeSubtitleEl = document.getElementById("mode-subtitle");
-  const modeButtons = document.querySelectorAll("[data-mode-btn]");
-  const questionTextEl = document.getElementById("question-text");
-  const answerInputEl = document.getElementById("answer-input");
-  const answerForm = document.getElementById("answer-form");
-  const startBtn = document.getElementById("start-btn");
-  const submitBtn = document.getElementById("submit-btn");
-  const resetBestBtn = document.getElementById("reset-best-btn");
-  const feedbackEl = document.getElementById("feedback");
-  const historyLogEl = document.getElementById("history-log");
-  const accuracyLabelEl = document.getElementById("accuracy-label");
+function getElement<T extends HTMLElement>(id: string): T {
+  const element = document.getElementById(id);
+  if (!element) {
+    throw new Error(`Missing element: ${id}`);
+  }
+  return element as T;
+}
 
-  let currentMode = "sprint";
-  let currentQuestion = null;
-  let timerId = null;
-  let timeLeft = SPRINT_TIME_SECONDS;
+function initializeGame(): void {
+  const scoreEl = getElement<HTMLElement>("score");
+  const streakEl = getElement<HTMLElement>("streak");
+  const bestScoreEl = getElement<HTMLElement>("best-score");
+  const timerEl = getElement<HTMLElement>("timer");
+  const timerPillEl = getElement<HTMLElement>("timer-pill");
+  const livesPillEl = getElement<HTMLElement>("lives-pill");
+  const livesCountEl = getElement<HTMLElement>("lives-count");
+  const modeTagEl = getElement<HTMLElement>("mode-tag");
+  const modeSubtitleEl = getElement<HTMLElement>("mode-subtitle");
+  const modeButtons = document.querySelectorAll<HTMLElement>("[data-mode-btn]");
+  const questionTextEl = getElement<HTMLElement>("question-text");
+  const answerInputEl = getElement<HTMLInputElement>("answer-input");
+  const answerForm = getElement<HTMLFormElement>("answer-form");
+  const startBtn = getElement<HTMLButtonElement>("start-btn");
+  const submitBtn = getElement<HTMLButtonElement>("submit-btn");
+  const resetBestBtn = getElement<HTMLButtonElement>("reset-best-btn");
+  const feedbackEl = getElement<HTMLElement>("feedback");
+  const historyLogEl = getElement<HTMLElement>("history-log");
+  const accuracyLabelEl = getElement<HTMLElement>("accuracy-label");
+
+  let currentMode: ModeKey = "sprint";
+  let currentQuestion: Question | null = null;
+  let timerId: ReturnType<typeof setInterval> | null = null;
+  let timeLeft: number | null = SPRINT_TIME_SECONDS;
   let isRunning = false;
 
-  const state = {
+  const state: GameState = {
     score: 0,
     streak: 0,
     totalAnswered: 0,
@@ -219,20 +265,20 @@ function initializeGame() {
     answerInputEl.disabled = true;
   }
 
-  function loadBestScore(mode) {
+  function loadBestScore(mode: ModeKey) {
     const key = MODES[mode].bestKey;
     const stored = localStorage.getItem(key);
     const baseBest = stored ? parseInt(stored, 10) || 0 : 0;
     const legacy = mode === "sprint" ? localStorage.getItem(LEGACY_SPRINT_KEY) : null;
     const legacyBest = legacy ? parseInt(legacy, 10) || 0 : 0;
     const best = Math.max(baseBest, legacyBest);
-    bestScoreEl.textContent = best;
+    bestScoreEl.textContent = String(best);
     if (mode === "sprint" && best > baseBest) {
       localStorage.setItem(key, String(best));
     }
   }
 
-  function saveBestScore(mode, newScore) {
+  function saveBestScore(mode: ModeKey, newScore: number) {
     const key = MODES[mode].bestKey;
     const stored = localStorage.getItem(key);
     const best = stored ? parseInt(stored, 10) || 0 : 0;
@@ -241,14 +287,14 @@ function initializeGame() {
       if (mode === "sprint") {
         localStorage.setItem(LEGACY_SPRINT_KEY, String(newScore));
       }
-      bestScoreEl.textContent = newScore;
+      bestScoreEl.textContent = String(newScore);
       showFeedback("New personal best!", "correct");
     }
   }
 
   function updateScoreboard() {
-    scoreEl.textContent = state.score;
-    streakEl.textContent = state.streak;
+    scoreEl.textContent = String(state.score);
+    streakEl.textContent = String(state.streak);
     accuracyLabelEl.textContent = `Score: ${state.totalCorrect} / ${state.totalAnswered}`;
   }
 
@@ -260,7 +306,7 @@ function initializeGame() {
     }
   }
 
-  function addHistoryEntry(question, userAnswer, correctAnswer, isCorrect) {
+  function addHistoryEntry(question: string, userAnswer: number, correctAnswer: number, isCorrect: boolean) {
     const div = document.createElement("div");
     div.className = `history-entry ${isCorrect ? "correct" : "wrong"}`;
     if (isCorrect) {
@@ -272,7 +318,7 @@ function initializeGame() {
     clearHistoryIfNeeded();
   }
 
-  function showFeedback(message, type) {
+  function showFeedback(message: string, type: "correct" | "wrong" | "") {
     feedbackEl.textContent = message || "";
     feedbackEl.classList.remove("correct", "wrong");
     if (type) {
@@ -284,7 +330,7 @@ function initializeGame() {
     const shouldShowLives = currentMode === "survival";
     livesPillEl.classList.toggle("hidden", !shouldShowLives);
     if (shouldShowLives) {
-      livesCountEl.textContent = state.lives ?? 0;
+      livesCountEl.textContent = String(state.lives ?? 0);
     }
   }
 
@@ -346,7 +392,7 @@ function initializeGame() {
     if (MODES[currentMode].hasTimer) {
       stopTimer();
       timerId = setInterval(() => {
-        timeLeft -= 1;
+        timeLeft = (timeLeft ?? 0) - 1;
         if (timeLeft <= 0) {
           timeLeft = 0;
           updateTimerDisplay();
@@ -358,7 +404,7 @@ function initializeGame() {
     }
   }
 
-  function endGame(reason = "time") {
+  function endGame(reason: "time" | "out_of_lives" | "manual" = "time") {
     if (!isRunning) return;
     isRunning = false;
     stopTimer();
@@ -378,7 +424,7 @@ function initializeGame() {
     saveBestScore(currentMode, state.score);
   }
 
-  function handleAnswerSubmit(event) {
+  function handleAnswerSubmit(event: SubmitEvent) {
     event.preventDefault();
     if (!isRunning || !currentQuestion) {
       return;
@@ -396,10 +442,10 @@ function initializeGame() {
 
     if (result.status === "correct") {
       showFeedback("Correct!", "correct");
-      addHistoryEntry(currentQuestion.text, result.parsedAnswer, currentQuestion.answer, true);
+      addHistoryEntry(currentQuestion.text, result.parsedAnswer ?? 0, currentQuestion.answer, true);
     } else {
       showFeedback(`Missed: ${currentQuestion.text} = ${currentQuestion.answer}`, "wrong");
-      addHistoryEntry(currentQuestion.text, result.parsedAnswer, currentQuestion.answer, false);
+      addHistoryEntry(currentQuestion.text, result.parsedAnswer ?? 0, currentQuestion.answer, false);
       if (currentMode === "survival") {
         state.lives = Math.max(0, (state.lives ?? 0) - 1);
         updateLivesDisplay();
@@ -430,7 +476,7 @@ function initializeGame() {
     showFeedback("Best score reset for this mode.", "");
   }
 
-  function switchMode(newMode) {
+  function switchMode(newMode: ModeKey) {
     if (!MODES[newMode] || newMode === currentMode) return;
     stopTimer();
     isRunning = false;
@@ -449,7 +495,12 @@ function initializeGame() {
   answerForm.addEventListener("submit", handleAnswerSubmit);
   resetBestBtn.addEventListener("click", resetBestScore);
   modeButtons.forEach((button) => {
-    button.addEventListener("click", () => switchMode(button.dataset.modeBtn));
+    button.addEventListener("click", () => {
+      const mode = button.dataset.modeBtn as ModeKey | undefined;
+      if (mode) {
+        switchMode(mode);
+      }
+    });
   });
 
   loadBestScore(currentMode);

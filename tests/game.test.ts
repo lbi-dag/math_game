@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
-import { evaluateAnswer, generateQuestion } from "../game.js";
+import { evaluateAnswer, generateQuestion } from "../game";
 
-function createRng(values) {
+function createRng(values: number[]) {
   let index = 0;
   return () => {
     const value = values[index % values.length];
@@ -44,7 +44,7 @@ describe("generateQuestion", () => {
 });
 
 describe("evaluateAnswer", () => {
-  const baseQuestion = { text: "1 + 1", answer: 2 };
+  const baseQuestion = { text: "1 + 1", answer: 2, type: "add" as const };
   const initialStats = { score: 2, streak: 1, totalAnswered: 3, totalCorrect: 2 };
 
   test("invalid input leaves stats unchanged", () => {
