@@ -5,10 +5,16 @@ Small, no-ads math games built for quick practice sessions and classroom-friendl
 ## What's here
 - Landing page: `index.html`
 - About page: `about.html`
+- Shared styles: `styles.css`
 - Number Sense Sprint game: `number-sense-sprint.html` + `game.ts` (compiled to `dist/game.js`)
 
 ## Run locally
-Open `index.html` in your browser. Run `npm run build` first to generate `dist/game.js`.
+1. `npm install`
+2. `npm run build` (outputs `dist/game.js`)
+3. Open `index.html` in your browser.
+
+## Tests
+- `npm test`
 
 ## Notes
 - Main branch is hosted at `https://mathgames.win/` via CloudFlare.
